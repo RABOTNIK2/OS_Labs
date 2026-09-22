@@ -1,0 +1,63 @@
+#include <windows.h>
+
+char my_tolower(char c) {
+    if (c >= 'A' && c <= 'Z') return c + 32;
+    return c;
+}
+
+int is_vowel(char c) {
+    c = my_tolower(c);
+    return (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u' || c == 'y');
+}
+
+DWORD my_strlen(const char *s) {
+    DWORD len = 0;
+    while (s[len]) len++;
+    return len;
+}
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        const char *err = "Filename is empty.\n";
+        DWORD written;
+        WriteFile(GetStdHandle(STD_ERROR_HANDLE), err, my_strlen(err), &written, NULL);
+        return 1;
+    }
+
+    HANDLE hFile = CreateFileA(
+        argv[1],
+        GENERIC_WRITE,
+        0,
+        NULL,
+        CREATE_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL
+    );
+
+    if (hFile == INVALID_HANDLE_VALUE) {
+        const char *err = "Ошибка CreateFile.\n";
+        DWORD written;
+        WriteFile(GetStdHandle(STD_ERROR_HANDLE), err, my_strlen(err), &written, NULL);
+        return 1;
+    }
+
+    HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+    char buffer[1024];
+    DWORD bytes_read;
+
+    while (ReadFile(hStdin, buffer, sizeof(buffer), &bytes_read, NULL) && bytes_read > 0) {
+        char result[1024];
+        DWORD j = 0;
+        for (DWORD i = 0; i < bytes_read; i++) {
+            if (!is_vowel(buffer[i])) {
+                result[j++] = buffer[i];
+            }
+        }
+
+        DWORD bytes_written;
+        WriteFile(hFile, result, j, &bytes_written, NULL);
+    }
+
+    CloseHandle(hFile);
+    return 0;
+}
