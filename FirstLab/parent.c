@@ -40,11 +40,11 @@ int main() {
     HANDLE hPipe2Read, hPipe2Write;
 
     if (!CreatePipe(&hPipe1Read, &hPipe1Write, &saAttr, 0)) {
-        print("Err CreatePipe 1\n");
+        print("Err creating first channel.\n");
         return 1;
     }
     if (!CreatePipe(&hPipe2Read, &hPipe2Write, &saAttr, 0)) {
-        print("Err CreatePipe 2\n");
+        print("Err creating second channel.\n");
         return 1;
     }
 
@@ -53,10 +53,10 @@ int main() {
 
     char file1[MAX_PATH], file2[MAX_PATH];
 
-    print("Name for child1: ");
+    print("Enter first file name: ");
     read_line(file1, MAX_PATH);
 
-    print("Name for child2: ");
+    print("Enter second file name: ");
     read_line(file2, MAX_PATH);
 
     STARTUPINFOA si1;
@@ -77,7 +77,7 @@ int main() {
     cmd1[k] = '\0';
 
     if (!CreateProcessA(NULL, cmd1, NULL, NULL, TRUE, 0, NULL, NULL, &si1, &pi1)) {
-        print("Err CreateProcess child1\n");
+        print("Err starting first proccess.\n");
         return 1;
     }
 
@@ -99,7 +99,7 @@ int main() {
     cmd2[k] = '\0';
 
     if (!CreateProcessA(NULL, cmd2, NULL, NULL, TRUE, 0, NULL, NULL, &si2, &pi2)) {
-        print("Err CreateProcess child2\n");
+        print("Error starting second proccess.\n");
         return 1;
     }
 
@@ -108,7 +108,7 @@ int main() {
     CloseHandle(pi1.hThread);
     CloseHandle(pi2.hThread);
 
-    print("\nEnter(exit to quit):\n");
+    print("\nEnter strings (for exit: exit):\n");
 
     char input[1024];
     while (1) {
